@@ -1,4 +1,5 @@
 # Deep Echo State Network Python library (DeepESNpy)
+# 2018
 
 Deep Echo State Network (DeepESN) is an extension of the ESN model towards the deep learning paradigm (Deep Reservoir Computing). A DeepESN is a deep Recurrent Neural Network composed by a hierarchy of recurrent layers intrinsically able to develop hierarchical and distributed temporal features. Such characteristics make DeepESN suitable for time-series and sequences processing.
 
