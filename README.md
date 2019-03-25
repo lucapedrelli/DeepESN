@@ -4,11 +4,11 @@ Deep Echo State Network (DeepESN) is an extension of the ESN model towards the d
 
 All details about DeepESN model are described in the reference paper (**CITATION REQUEST**): <br />
 C. Gallicchio, A. Micheli, L. Pedrelli, <br />
-"Deep Reservoir Computing: A Critical Experimental Analysis", Neurocomputing, 2017, vol. 268, pp. 87-99
+["Deep Reservoir Computing: A Critical Experimental Analysis", Neurocomputing, 2017, vol. 268, pp. 87-99](https://www.sciencedirect.com/science/article/pii/S0925231217307567)
 
 The design of DeepESN model in multivariate time-series prediction tasks is described in the following paper: <br />
 C. Gallicchio, A. Micheli, L. Pedrelli, <br />
-"Design of deep echo state networks", Neural Networks, 2018, vol. 108, pp. 33-47
+["Design of deep echo state networks", Neural Networks, 2018, vol. 108, pp. 33-47](https://www.sciencedirect.com/science/article/pii/S0893608018302223)
 
 
 **AUTHOR INFORMATION**
