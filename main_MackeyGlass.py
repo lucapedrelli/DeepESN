@@ -27,9 +27,7 @@ http://www.di.unipi.it/groups/ciml/
 import numpy as np
 import random
 from DeepESN import DeepESN
-from metrics import MSE
-from configurations import config_MG
-from task import load_MG, select_indexes
+from utils import MSE, config_MG, load_MG, select_indexes
 class Struct(object): pass
 
 # sistemare indici per IP in config_pianomidi, mettere da un'altra parte
@@ -44,7 +42,7 @@ def main():
     dataset, Nu, error_function, optimization_problem, TR_indexes, VL_indexes, TS_indexes = load_MG(path, MSE)
 
     # load configuration for pianomidi task
-    configs = config_MG(list(TR_indexes) + list(VL_indexes))   
+    configs = config_MG(list(TR_indexes) + list(VL_indexes))
     
     # Be careful with memory usage
     Nr = 100 # number of recurrent units
