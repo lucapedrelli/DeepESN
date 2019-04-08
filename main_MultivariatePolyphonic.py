@@ -33,9 +33,7 @@ http://www.di.unipi.it/groups/ciml/
 import numpy as np
 import random
 from DeepESN import DeepESN
-from metrics import computeMusicAccuracy
-from configurations import config_pianomidi
-from task import load_pianomidi, select_indexes
+from utils import computeMusicAccuracy, config_pianomidi, load_pianomidi, select_indexes
 class Struct(object): pass
 
 # sistemare indici per IP in config_pianomidi, mettere da un'altra parte
