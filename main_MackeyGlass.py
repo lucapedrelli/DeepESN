@@ -61,11 +61,11 @@ def main():
     deepESN.trainReadout(train_states, train_targets, reg)
     
     train_outputs = deepESN.computeOutput(train_states)
-    train_error = error_function(train_outputs, train_targets)
+    train_error = error_function(train_outputs, np.concatenate(train_targets,1))
     print('Training ACC: ', np.mean(train_error), '\n')
     
     test_outputs = deepESN.computeOutput(test_states)
-    test_error = error_function(test_outputs, test_targets)
+    test_error = error_function(test_outputs, np.concatenate(test_targets,1))
     print('Test ACC: ', np.mean(test_error), '\n')
  
  

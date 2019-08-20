@@ -196,7 +196,7 @@ class DeepESN():
             
         return states
     
-    def computeState(self,inputs, initialStates = None, DeepIP = 0, verbose=0):
+    def computeState(self,inputs, DeepIP = 0, initialStates = None, verbose=0):
         # compute the global state of DeepESN with pre-training if DeepIP == 1         
         
         if self.IPconf.DeepIP and DeepIP:

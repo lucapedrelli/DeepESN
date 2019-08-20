@@ -68,7 +68,7 @@ def load_MG(path, metric_function):
     Nu = dataset.inputs[0].shape[0]
 
     # function used for model evaluation
-    error_function = functools.partial(metric_function, 0.5)     
+    error_function = metric_function    
     
     # select the model that achieves the maximum accuracy on validation set
     optimization_problem = np.argmin   

@@ -31,7 +31,18 @@ def computeMusicAccuracy(threshold,X,Y):
     ACCURACY = TP/float(TP + FP + FN)
     return ACCURACY
 
+# Mean Absolute Percentage Error
+def MAPE(X, Y): 
+    return np.mean(np.abs((Y - X) / Y))
+
 # Mean Squared Error
-def MSE(threshold,X,Y):
-    Y = np.concatenate(Y,1)
+def MSE(X,Y):
     return  np.mean((X-Y)**2)
+
+# Normalized Mean Squared Error
+def NRMSE(X,Y):
+    return  (np.mean((X-Y)**2) / (np.std(Y)**2))**0.5
+
+# Mean Absolute Error
+def MAE(X,Y):
+    return  np.mean(np.abs(X-Y))
