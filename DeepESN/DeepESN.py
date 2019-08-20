@@ -33,11 +33,12 @@ class DeepESN():
     ----
     '''
     
-    def __init__(self, Nu,Nr,Nl, configs):
+    def __init__(self, Nu,Nr,Nl, configs, verbose=0):
         # initialize the DeepESN model
         
-        sys.stdout.write('init DeepESN...')
-        sys.stdout.flush()
+        if verbose:
+            sys.stdout.write('init DeepESN...')
+            sys.stdout.flush()
         
         rhos = np.array(configs.rhos) # spectral radius (maximum absolute eigenvalue)
         lis = np.array(configs.lis) # leaky rate
@@ -105,14 +106,18 @@ class DeepESN():
             
             self.Gain[layer] = np.ones((Nr,1))
             self.Bias[layer] = np.zeros((Nr,1)) 
-            
-        print('done.')
-        sys.stdout.flush()
+         
+        if verbose:
+            print('done.')
+            sys.stdout.flush()
     
-    def computeLayerState(self, input, layer, DeepIP = 0):  
-        # compute the state of a layer with pre-training if DeepIP == 1              
+    def computeLayerState(self, input, layer, initialStatesLayer = None, DeepIP = 0):  
+        # compute the state of a layer with pre-training if DeepIP == 1                    
         
-        state = np.zeros((self.Nr, input.shape[1]))        
+        state = np.zeros((self.Nr, input.shape[1]))   
+        
+        if initialStatesLayer is None:
+            initialStatesLayer = np.zeros(state[:,0:1].shape)
         
         input = self.Win[layer][:,0:-1].dot(input) + np.expand_dims(self.Win[layer][:,-1],1)   
         
@@ -121,8 +126,8 @@ class DeepESN():
             state_net[:,0:1] = input[:,0:1]
             state[:,0:1] = self.lis[layer] * np.tanh(np.multiply(self.Gain[layer], state_net[:,0:1]) + self.Bias[layer])
         else:
-            state[:,0:1] = self.lis[layer] * np.tanh(np.multiply(self.Gain[layer], input[:,0:1]) + self.Bias[layer])        
-        
+            #state[:,0:1] = self.lis[layer] * np.tanh(np.multiply(self.Gain[layer], input[:,0:1]) + self.Bias[layer])        
+            state[:,0:1] = (1-self.lis[layer]) * initialStatesLayer + self.lis[layer] * np.tanh( np.multiply(self.Gain[layer], self.W[layer].dot(initialStatesLayer) + input[:,0:1]) + self.Bias[layer])        
  
         for t in range(1,state.shape[1]):
             if DeepIP:
@@ -191,38 +196,46 @@ class DeepESN():
             
         return states
     
-    def computeState(self,inputs, DeepIP = 0):
-        # compute the global state of DeepESN with pre-training if DeepIP == 1
+    def computeState(self,inputs, initialStates = None, DeepIP = 0, verbose=0):
+        # compute the global state of DeepESN with pre-training if DeepIP == 1         
         
         if self.IPconf.DeepIP and DeepIP:
-            sys.stdout.write('compute state with DeepIP...')
-            sys.stdout.flush()
+            if verbose:
+                sys.stdout.write('compute state with DeepIP...')
+                sys.stdout.flush()
             states = self.computeDeepIntrinsicPlasticity(inputs)
-        else:         
-            sys.stdout.write('compute state...')
-            sys.stdout.flush()
+        else:      
+            if verbose:
+                sys.stdout.write('compute state...')
+                sys.stdout.flush()
             states = []
 
             for i_seq in range(len(inputs)):
-                states.append(self.computeGlobalState(inputs[i_seq]))
+                states.append(self.computeGlobalState(inputs[i_seq], initialStates))
                 
-        print('done.')
-        sys.stdout.flush()
+        if verbose:        
+            print('done.')
+            sys.stdout.flush()
         
         return states
     
-    def computeGlobalState(self,input):
+    def computeGlobalState(self,input, initialStates):
         # compute the global state of DeepESN
-        
+
         state = np.zeros((self.Nl*self.Nr,input.shape[1]))
+        
+        initialStatesLayer = None
+
 
         for layer in range(self.Nl):
-            state[(layer)*self.Nr: (layer+1)*self.Nr,:] = self.computeLayerState(input, layer)    
+            if initialStates is not None:
+                initialStatesLayer = initialStates[(layer)*self.Nr: (layer+1)*self.Nr,:]            
+            state[(layer)*self.Nr: (layer+1)*self.Nr,:] = self.computeLayerState(input, layer, initialStatesLayer, 0)    
             input = state[(layer)*self.Nr: (layer+1)*self.Nr,:]   
 
         return state
         
-    def trainReadout(self,trainStates,trainTargets,lb):
+    def trainReadout(self,trainStates,trainTargets,lb, verbose=0):
         # train the readout of DeepESN
 
         trainStates = np.concatenate(trainStates,1)
@@ -231,10 +244,11 @@ class DeepESN():
         # add bias
         X = np.ones((trainStates.shape[0]+1, trainStates.shape[1]))
         X[:-1,:] = trainStates    
-        trainStates = X           
+        trainStates = X  
         
-        sys.stdout.write('train readout...')
-        sys.stdout.flush()
+        if verbose:
+            sys.stdout.write('train readout...')
+            sys.stdout.flush()
         
         if self.readout.trainMethod == 'SVD': # SVD, accurate method
             U, s, V = np.linalg.svd(trainStates, full_matrices=False);  
@@ -248,8 +262,9 @@ class DeepESN():
 
             self.Wout = np.linalg.solve((A + np.eye(A.shape[0], A.shape[1]) * lb), B.T).T
 
-        print('done.')
-        sys.stdout.flush()
+        if verbose:
+            print('done.')
+            sys.stdout.flush()
         
     def computeOutput(self,state):
         # compute a linear combination between the global state and the output weights  
