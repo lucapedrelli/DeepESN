@@ -168,10 +168,10 @@ class DeepESN():
 
 
                 if len(inputs) == 1:
-                    self.computeLayerState(inputs[0][:,self.IPconf.indexes], layer, 1)  
+                    self.computeLayerState(inputs[0][:,self.IPconf.indexes], layer, DeepIP = 1)
                 else:
                     for i in self.IPconf.indexes:
-                        self.computeLayerState(inputs[i], layer, 1)   
+                        self.computeLayerState(inputs[i], layer, DeepIP = 1)
                        
                 
                 if (np.linalg.norm(self.Gain[layer]-Gain_epoch,2) < self.IPconf.threshold) and (np.linalg.norm(self.Bias[layer]-Bias_epoch,2)< self.IPconf.threshold):
