@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.matlib as npm
 import scipy as sc
 import random
 import sys
@@ -47,13 +48,13 @@ class DeepESN():
         reservoirConf = configs.reservoirConf # reservoir configurations
         
         if len(rhos.shape) == 0:
-            rhos = np.matlib.repmat(rhos, 1,Nl)[0]
+            rhos = npm.repmat(rhos, 1,Nl)[0]
 
         if len(lis.shape) == 0:
-            lis = np.matlib.repmat(lis, 1,Nl)[0]
+            lis = npm.repmat(lis, 1,Nl)[0]
 
         if len(iss.shape) == 0:
-            iss = np.matlib.repmat(iss, 1,Nl)[0]
+            iss = npm.repmat(iss, 1,Nl)[0]
             
         self.W = {} # recurrent weights
         self.Win = {} # recurrent weights
@@ -140,7 +141,7 @@ class DeepESN():
             
                 # IP learning rule
                 deltaBias = -eta*((-mu/sigma2)+ np.multiply(state[:,t:t+1], (2*sigma2+1-(state[:,t:t+1]**2)+mu*state[:,t:t+1])/sigma2))
-                deltaGain = eta / np.matlib.repmat(self.Gain[layer],1,state_net[:,t:t+1].shape[1]) + deltaBias * state_net[:,t:t+1]
+                deltaGain = eta / npm.repmat(self.Gain[layer],1,state_net[:,t:t+1].shape[1]) + deltaBias * state_net[:,t:t+1]
                 
                 # update gain and bias of activation function
                 self.Gain[layer] = self.Gain[layer] + deltaGain
