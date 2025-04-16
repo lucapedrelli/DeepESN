@@ -20,3 +20,10 @@ lucapedrelli@gmail.com
 Department of Computer Science - University of Pisa (Italy) <br />
 Computational Intelligence & Machine Learning (CIML) Group <br />
 http://www.di.unipi.it/groups/ciml/
+
+## Installation
+
+To install DeepESN, run the following command:
+
+```bash
+pip install DeepESN
