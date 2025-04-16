@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 setup(name='DeepESN',
       version='1.1.2',
       packages=find_packages(),
+      package_dir='src',
       install_requires=[
           'scipy',
           'numpy'

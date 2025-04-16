@@ -1,14 +1,20 @@
 '''
-This is an example of the application of DeepESN model for next-step prediction on Mackey Glass time-series. 
+This is an example of the application of DeepESN model for multivariate time-series prediction task 
+on Piano-midi.de (see http://www-etud.iro.umontreal.ca/~boulanni/icml2012) dataset.
+The dataset is a polyphonic music task characterized by 88-dimensional sequences representing musical compositions.
+Starting from played notes at time t, the aim is to predict the played notes at time t+1.
 
 Reference paper for DeepESN model:
 C. Gallicchio, A. Micheli, L. Pedrelli, "Deep Reservoir Computing: A Critical Experimental Analysis", 
 Neurocomputing, 2017, vol. 268, pp. 87-99
 
-Reference paper for the design of DeepESN model in multivariate time-series prediction tasks:
+In this Example we consider the hyper-parameters designed in the following paper:
 C. Gallicchio, A. Micheli, L. Pedrelli, "Design of deep echo state networks",
-Neural Networks, 2018, vol. 108, pp. 33-47 
-    
+Neural Networks, 2018, vol. 108, pp. 33-47
+
+However, for the ease of calculation, in this example
+we consider only Nr = 100 units and Nl = 5 layers instead of Nr = 200 and Nl = 35.
+
 ----
 
 This file is a part of the DeepESN Python Library (DeepESNpy)
@@ -27,7 +33,9 @@ http://www.di.unipi.it/groups/ciml/
 import numpy as np
 import random
 from DeepESN import DeepESN
-from utils import MSE, config_MG, load_MG, select_indexes
+from deepesn.metrics import computeMusicAccuracy 
+from deepesn.configurations import config_pianomidi
+from deepesn.task import load_pianomidi, select_indexes
 class Struct(object): pass
 
 # sistemare indici per IP in config_pianomidi, mettere da un'altra parte
@@ -39,16 +47,16 @@ def main():
    
     # dataset path 
     path = 'datasets'
-    dataset, Nu, error_function, optimization_problem, TR_indexes, VL_indexes, TS_indexes = load_MG(path, MSE)
+    dataset, Nu, error_function, optimization_problem, TR_indexes, VL_indexes, TS_indexes = load_pianomidi(path, computeMusicAccuracy)
 
     # load configuration for pianomidi task
-    configs = config_MG(list(TR_indexes) + list(VL_indexes))
+    configs = config_pianomidi(list(TR_indexes) + list(VL_indexes))   
     
     # Be careful with memory usage
     Nr = 100 # number of recurrent units
     Nl = 5 # number of recurrent layers
-    reg = 0.0;
-    transient = 100
+    reg = 10.0**-2;
+    transient = 5
     
     deepESN = DeepESN(Nu, Nr, Nl, configs)
     states = deepESN.computeState(dataset.inputs, deepESN.IPconf.DeepIP)
