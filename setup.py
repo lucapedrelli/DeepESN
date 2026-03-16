@@ -9,7 +9,7 @@ setup(
         'scipy',
         'numpy'
     ],
-    description="Deep Echo State Network Python library (DeepESNpy), 2018",
+    description="Deep Echo State Network Python library (DeepESN), 2018",
     author='Luca Pedrelli',
     author_email='lucapedrelli@gmail.com',
     license='BSD 3-Clause',
