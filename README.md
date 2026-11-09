@@ -25,11 +25,11 @@ https://www.santannapisa.it/it/istituto/tecip
 ## Installation
 
 ```bash
-pip install git+https://github.com/lucapedrelli/DeepESN.git@v1.2.0
+pip install DeepESN
 ```
 
-`pip install DeepESN` installs the version on PyPI. Development version (from this repository): `pip install -e .`
-The `Ridge` readout needs scikit-learn (`pip install "DeepESN[ridge] @ git+https://github.com/lucapedrelli/DeepESN.git@v1.2.0"`).
+Development version (from this repository): `pip install -e .`
+The `Ridge` readout needs scikit-learn (`pip install "DeepESN[ridge]"`).
 
 ## DeepESN 1.x API (unchanged)
 
