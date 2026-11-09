@@ -1,76 +1,50 @@
 '''
-This is an example of the application of DeepESN model for next-step prediction on Mackey Glass time-series. 
+This is an example of the application of DeepESN model for next-step prediction on Mackey Glass time-series.
 
 Reference paper for DeepESN model:
-C. Gallicchio, A. Micheli, L. Pedrelli, "Deep Reservoir Computing: A Critical Experimental Analysis", 
+C. Gallicchio, A. Micheli, L. Pedrelli, "Deep Reservoir Computing: A Critical Experimental Analysis",
 Neurocomputing, 2017, vol. 268, pp. 87-99
 
 Reference paper for the design of DeepESN model in multivariate time-series prediction tasks:
 C. Gallicchio, A. Micheli, L. Pedrelli, "Design of deep echo state networks",
-Neural Networks, 2018, vol. 108, pp. 33-47 
-    
+Neural Networks, 2018, vol. 108, pp. 33-47
+
 ----
 
-This file is a part of the DeepESN Python Library (DeepESNpy)
+This file is a part of the Deep Echo State Network (DeepESN) Python Library
 
 Luca Pedrelli
-luca.pedrelli@di.unipi.it
+luca.pedrelli@santannapisa.it
 lucapedrelli@gmail.com
 
-Department of Computer Science - University of Pisa (Italy)
-Computational Intelligence & Machine Learning (CIML) Group
-http://www.di.unipi.it/groups/ciml/
+The Telecommunications, Computer Engineering, and Photonics Institute (TeCIP)
+Scuola Superiore Sant'Anna in Pisa
+ICT-COISP (ICT for Complex Industrial Systems and Processes)
+https://www.santannapisa.it/it/istituto/tecip
 
 ----
 '''
 
-import numpy as np
-import random
-from deepesn import DeepESN
-from deepesn.metrics import MSE 
-from deepesn.configurations import config_MG
-from deepesn.task import load_MG, select_indexes
-class Struct(object): pass
+from deepesn import DeepESN, Readout, ESNLayer
+from deepesn.tasks import NextStepPrediction
 
-# sistemare indici per IP in config_pianomidi, mettere da un'altra parte
-# sistema selezione indici con transiente messi all'interno della rete
+
 def main():
-    
-    # fix a seed for the reproducibility of results
-    np.random.seed(7)
-   
-    # dataset path 
-    path = 'datasets'
-    dataset, Nu, error_function, optimization_problem, TR_indexes, VL_indexes, TS_indexes = load_MG(path, MSE)
 
-    # load configuration for pianomidi task
-    configs = config_MG(list(TR_indexes) + list(VL_indexes))
-    
-    # Be careful with memory usage
-    Nr = 100 # number of recurrent units
-    Nl = 5 # number of recurrent layers
-    reg = 0.0;
-    transient = 100
-    
-    deepESN = DeepESN(Nu, Nr, Nl, configs)
-    states = deepESN.computeState(dataset.inputs, deepESN.IPconf.DeepIP)
-    
-    train_states = select_indexes(states, list(TR_indexes) + list(VL_indexes), transient)
-    train_targets = select_indexes(dataset.targets, list(TR_indexes) + list(VL_indexes), transient)
-    test_states = select_indexes(states, TS_indexes)
-    test_targets = select_indexes(dataset.targets, TS_indexes)
-    
-    deepESN.trainReadout(train_states, train_targets, reg)
-    
-    train_outputs = deepESN.computeOutput(train_states)
-    train_error = error_function(train_outputs, train_targets)
-    print('Training ACC: ', np.mean(train_error), '\n')
-    
-    test_outputs = deepESN.computeOutput(test_states)
-    test_error = error_function(test_outputs, test_targets)
-    print('Test ACC: ', np.mean(test_error), '\n')
- 
- 
+    # Mackey-Glass time series (tau = 17): 4000 steps for training, 1000 for validation, 5000 for test
+    train, validation, test = NextStepPrediction.mackey_glass(4000, 1000, 5000)
+    task = NextStepPrediction(train, validation, test, washout=100)
+
+    # DeepESN with 5 recurrent layers of 100 units, readout trained by singular value decomposition
+    Nr = 100  # number of recurrent units
+    Nl = 5    # number of recurrent layers
+    model = DeepESN(1, layers=[ESNLayer(Nr, spectral_radius=0.9, input_scaling=0.1) for _ in range(Nl)],
+                    readout=Readout('SVD', regularization=0.0), seed=7)
+
+    for split in ('validation', 'test'):
+        result = task.evaluate(model, split)
+        print('%s MSE: %.3e   MAE: %.3e' % (split.capitalize(), result['mse'], result['mae']))
+
+
 if __name__ == "__main__":
     main()
-    

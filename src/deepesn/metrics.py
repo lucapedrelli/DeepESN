@@ -3,33 +3,21 @@ Metrics functions
 
 ----
 
-This file is a part of the DeepESN Python Library (DeepESNpy)
+This file is a part of the Deep Echo State Network (DeepESN) Python Library
 
 Luca Pedrelli
-luca.pedrelli@di.unipi.it
+luca.pedrelli@santannapisa.it
 lucapedrelli@gmail.com
 
-Department of Computer Science - University of Pisa (Italy)
-Computational Intelligence & Machine Learning (CIML) Group
-http://www.di.unipi.it/groups/ciml/
+The Telecommunications, Computer Engineering, and Photonics Institute (TeCIP)
+Scuola Superiore Sant'Anna in Pisa
+ICT-COISP (ICT for Complex Industrial Systems and Processes)
+https://www.santannapisa.it/it/istituto/tecip
 
 ----
 '''
 
 import numpy as np
-
-# Accuracy function used to evaluate the prediction in polyphonic music tasks: true positive/(true positive + false positive + false negative)
-def computeMusicAccuracy(threshold,X,Y):
-    Y = np.concatenate(Y,1)
-    Nsys = np.sum(X>threshold, axis=0)
-    Nref = np.sum(Y>threshold, axis=0)
-    Ncorr = np.sum((X>threshold) * (Y>threshold), axis=0)
-        
-    TP = np.sum(Ncorr)
-    FP = np.sum(Nsys-Ncorr)
-    FN = np.sum(Nref-Ncorr)
-    ACCURACY = TP/float(TP + FP + FN)
-    return ACCURACY
 
 # Mean Absolute Percentage Error
 def MAPE(X, Y): 

@@ -1,0 +1,5 @@
+numpy
+scipy
+
+# optional: Ridge readout
+# scikit-learn
